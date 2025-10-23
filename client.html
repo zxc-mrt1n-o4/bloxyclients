@@ -1,11 +1,13 @@
+<!-- v2.00.009 - CLEAN FLOATING PROGRESS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- v2.00.009 - INLINE TAILWIND -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
     <style>
-        /* INLINE TAILWIND */
+        /* v2.00.009 - INLINE TAILWIND */
         *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
         .bg-transparent{background:transparent}
         .fixed{position:fixed}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem*var(--tw-space-y-reverse))}
@@ -17,11 +19,11 @@
         .text-white{color:#fff}.text-sm{font-size:0.875rem}.font-mono{font-family:ui-monospace,monospace}
         .flex{display:flex}.items-center{align-items:center}.justify-center{justify-content:center}
         .mt-3{margin-top:0.75rem}.mb-3{margin-bottom:0.75rem}
-        .absolute{position:absolute}.left-0{left:0}.right-0{right:0}.top-0{top:0}
+        .absolute{position:absolute}.left-0{left:0}.right-0{right:0}.top-3{top:0.75rem}
         .h-1{height:0.25rem}.bg-blue-500{background-color:#3b82f6}
         .rounded-full{border-radius:9999px}.shadow-sm{box-shadow:0 1px 2px 0 rgba(0,0,0,.05)}
         
-        /* ANIMATIONS */
+        /* v2.00.009 - ANIMATIONS */
         .slide-in{animation:slideIn 0.3s ease-out forwards}
         .slide-out{animation:slideOut 0.3s ease-in forwards}
         .progress-fill{animation:progressFill linear forwards}
@@ -31,25 +33,28 @@
     </style>
 </head>
 <body class="bg-transparent">
+    <!-- v2.00.009 - TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-99999 pointer-events-none"></div>
 
+    <!-- v2.00.009 - TOAST SCRIPT -->
     <script>
         function showToast(message, duration = 5000) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-240 shadow-2xl text-white text-sm font-mono slide-in relative';
             
+            // v2.00.009 - CLEAN TEXT ONLY (NO BLUE DOT)
             toast.innerHTML = `<div class="flex items-center justify-center">${message}</div>`;
             
             container.appendChild(toast);
 
-            // FLOATING ROUNDED PROGRESS LINE
+            // v2.00.009 - FLOATING ROUNDED LINE (TOP POSITION)
             const progress = document.createElement('div');
-            progress.className = 'absolute left-0 right-0 top-0 h-1 bg-blue-500 rounded-full shadow-sm mt-3';
+            progress.className = 'absolute left-0 right-0 top-3 h-1 bg-blue-500 rounded-full shadow-sm progress-fill';
             progress.style.animationDuration = duration + 'ms';
             toast.appendChild(progress);
 
-            // FADE OUT AFTER PROGRESS
+            // v2.00.009 - FADE OUT
             setTimeout(() => {
                 toast.classList.remove('slide-in');
                 toast.classList.add('slide-out');
@@ -57,7 +62,7 @@
             }, duration);
         }
 
-        // LISTEN FOR MESSAGES
+        // v2.00.009 - MESSAGE LISTENER
         window.addEventListener('message', (e) => {
             if (e.data.type === 'toast') showToast(e.data.message, e.data.duration || 3000);
         });
