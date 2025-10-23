@@ -1,75 +1,109 @@
-<!-- v2.00.018 - ULTRA SIMPLE BOTTOM LINE -->
+<!-- v2.01.000-alpha - TOAST SYSTEM REWRITE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloxd Client UI</title>
+    <title>Bloxy Client UI</title>
     <style>
-        body{margin:0;font-family:monospace;background:transparent}
-        #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:99999;pointer-events:none}
-        .toast{
-            background:rgba(0,0,0,0.95);
-            backdrop-filter:blur(16px);
-            border:1px solid rgba(59,130,246,0.3);
-            border-radius:12px;
-            padding:16px 16px 8px; /* add bottom padding for line space */
-            min-width:240px;
-            margin-bottom:8px;
-            box-shadow:0 25px 50px rgba(0,0,0,0.25);
-            color:white;
-            font-size:14px;
-            animation:slideIn 0.3s ease-out forwards;
-            display:flex;
-            flex-direction:column;
-            overflow:hidden; /* ensures line stays contained */
+        body {
+            margin: 0;
+            font-family: 'Consolas', monospace;
+            background: transparent;
         }
-        .toast-text{
-            flex:1;
-            text-align:center;
-            margin-bottom:4px; /* separate from line */
+
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 99999;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .progress-line{
-            height:3px; /* thinner line */
-            background:linear-gradient(90deg,#3b82f6,#60a5fa);
-            border-radius:0 0 12px 12px;
-            width:0;
-            animation:progressLine linear forwards;
-            box-shadow:0 0 6px rgba(59,130,246,0.6);
+
+        .toast {
+            display: flex;
+            flex-direction: column;
+            width: 280px;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            color: #fff;
+            animation: slideIn 0.25s ease-out forwards;
         }
-        @keyframes slideIn{
-            from{transform:translateX(100%);opacity:0}
-            to{transform:translateX(0);opacity:1}
+
+        .toast-header {
+            font-weight: bold;
+            font-size: 14px;
+            padding: 10px 14px 0;
+            color: #60a5fa;
+            text-shadow: 0 0 4px rgba(59,130,246,0.5);
         }
-        @keyframes slideOut{
-            from{transform:translateX(0);opacity:1}
-            to{transform:translateX(100%);opacity:0}
+
+        .toast-text {
+            font-size: 13px;
+            padding: 4px 14px 12px;
+            color: #e0e7ff;
         }
-        @keyframes progressLine{
-            to{width:100%}
+
+        .toast-progress {
+            height: 2px;
+            width: 0;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            box-shadow: 0 0 8px rgba(59,130,246,0.5);
+            animation: progressLine linear forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes progressLine {
+            to { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div id="toast-container"></div>
+
     <script>
-        function showToast(message,lifetime=5000,showProgress=true){
-            const c=document.getElementById('toast-container'),t=document.createElement('div');
-            t.className='toast';
-            t.innerHTML=`<div class="toast-text">${message}</div>`;
-            c.appendChild(t);
-            if(showProgress){
-                const p=document.createElement('div');
-                p.className='progress-line';
-                p.style.animationDuration=lifetime+'ms';
-                t.appendChild(p);
-            }
-            setTimeout(()=>{
-                t.style.animation='slideOut 0.3s ease-in forwards';
-                setTimeout(()=>t.remove(),300)
-            },lifetime+500)
+        function showToast(title, text, lifetime = 4000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-header">${title}</div>
+                <div class="toast-text">${text}</div>
+                <div class="toast-progress"></div>
+            `;
+
+            const progress = toast.querySelector('.toast-progress');
+            progress.style.animationDuration = lifetime + 'ms';
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, lifetime + 300);
         }
-        window.addEventListener('message',e=>e.data.type==='toast'&&showToast(e.data.message,e.data.lifetime||3000,e.data.showProgress!==false))
+
+        window.addEventListener('message', e => {
+            if (e.data.type === 'toast') {
+                showToast(e.data.title || 'BloxyClient', e.data.text || '', e.data.lifetime || 3000);
+            }
+        });
     </script>
 </body>
 </html>
