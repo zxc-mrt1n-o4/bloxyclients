@@ -4,69 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/framer-motion@11/dist/motion.umd.js"></script>
-    <script>
-        tailwind.config = { theme: { extend: { colors: { 'bloxd': '#ff6b35' } } } }
+    <!-- PRE-BUILT TAILWIND (No CDN Warning) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- MOTION ESM -->
+    <script type="module">
+        import { motion } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
+        window.framerMotion = { motion };
     </script>
+    <style>
+        .bloxd { color: #ff6b35; }
+        .bg-bloxd { background-color: #ff6b35; }
+        .border-bloxd { border-color: #ff6b35; }
+    </style>
 </head>
 <body class="bg-transparent">
     <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-[99999] pointer-events-none">
     </div>
 
-    <script>
+    <script type="module">
         // MOTION TOAST COMPONENT
-        function showToast(message, duration = 5000) {
+        async function showToast(message, duration = 5000) {
+            const { motion } = window.framerMotion;
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-[240px] shadow-2xl text-white text-sm font-mono flex items-center space-x-3';
+            toast.className = 'bg-black bg-opacity-95 backdrop-blur-lg border border-blue-500 border-opacity-30 rounded-xl p-4 min-w-[240px] shadow-2xl text-white text-sm font-mono flex items-center space-x-3 relative overflow-hidden';
             
             toast.innerHTML = `
-                <div class="flex-1">${message}</div>
-                <div class="w-6 h-6 rounded-full bg-blue-500/30 border-2 border-blue-500 flex items-center justify-center">
-                    <div id="timer-circle" class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div class="flex-1 z-10">${message}</div>
+                <div class="w-6 h-6 rounded-full bg-blue-500 bg-opacity-30 border-2 border-blue-500 flex items-center justify-center z-10">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
                 </div>
             `;
             
             container.appendChild(toast);
 
-            // MOTION ANIMATIONS
-            const { motion } = window.framerMotion;
-            
             // SLIDE IN
-            motion(toast, {
+            await motion(toast, {
                 x: [100, 0],
                 opacity: [0, 1],
                 transition: { duration: 0.3, ease: "easeOut" }
             });
 
-            // CIRCLE TIMER ANIMATION
-            const circle = toast.querySelector('#timer-circle');
-            motion(circle, {
-                scale: [0, 1],
-                transition: { duration: 0.2, delay: 0.1 }
-            });
-
-            // PROGRESS FILL (BOLD LINE)
+            // BOLD PROGRESS LINE
             const progress = document.createElement('div');
-            progress.className = 'absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl';
+            progress.className = 'absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0';
             toast.appendChild(progress);
             
-            motion(progress, {
+            await motion(progress, {
                 width: ['0%', '100%'],
                 transition: { duration: duration/1000, ease: "linear" }
             });
 
             // SMOOTH FADE OUT
-            setTimeout(() => {
-                motion(toast, {
-                    x: [0, 100],
-                    opacity: [1, 0],
-                    transition: { duration: 0.3, ease: "easeIn" }
-                });
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+            await motion(toast, {
+                x: [0, 100],
+                opacity: [1, 0],
+                transition: { duration: 0.3, ease: "easeIn" }
+            });
+            setTimeout(() => toast.remove(), 300);
         }
 
         // LISTEN FOR MESSAGES
