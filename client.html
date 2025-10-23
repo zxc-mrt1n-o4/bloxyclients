@@ -1,28 +1,25 @@
-<!-- v2.00.013 - MODERN SCRIPTS: TAILWIND + MOTION ESM -->
+<!-- v2.00.014 - MODERN SCRIPTS: PRE-BUILT TAILWIND + SKYPACK MOTION ESM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- v2.00.013 - TAILWIND CDN (MINIFIED, NO WARNING) -->
+    <!-- v2.00.014 - PRE-BUILT TAILWIND CSS (No JS MIME Issue) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
-    <script>
-        tailwind.config = { theme: { extend: { colors: { 'bloxd': '#ff6b35' } } } }
-    </script>
-    <!-- v2.00.013 - MOTION ESM BASE -->
-    <base href="https://cdn.jsdelivr.net/npm/">
+    <link rel="preload" href="https://unpkg.com/tailwindcss@^3.3.0/dist/tailwind.min.css" as="style">
+    <link href="https://unpkg.com/tailwindcss@^3.3.0/dist/tailwind.min.css" rel="stylesheet">
+    <!-- v2.00.014 - MOTION ESM VIA SKYPACK (Bypasses Bare Specifier) -->
 </head>
 <body class="bg-transparent">
-    <!-- v2.00.013 - TOAST CONTAINER -->
+    <!-- v2.00.014 - TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-[99999] pointer-events-none">
     </div>
 
-    <!-- v2.00.013 - MOTION ESM SCRIPT (DEFERRED LOAD) -->
-    <script type="module" defer>
-        import { motion } from "framer-motion@11/+esm";  // ESM import (bypasses MIME via +esm)
+    <!-- v2.00.014 - MOTION ESM SCRIPT (FULL URL + CROSSORIGIN) -->
+    <script type="module" crossorigin="anonymous">
+        import { motion } from "https://cdn.skypack.dev/framer-motion@11";
         
-        // v2.00.013 - MOTION TOAST COMPONENT
+        // v2.00.014 - MOTION TOAST COMPONENT
         async function showToast(message, lifetime = 5000, showProgress = true) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -31,14 +28,14 @@
             toast.innerHTML = `<div class="flex items-center justify-center mb-auto">${message}</div>`;
             container.appendChild(toast);
 
-            // v2.00.013 - SLIDE IN
+            // v2.00.014 - SLIDE IN
             await motion(toast, {
                 x: [100, 0],
                 opacity: [0, 1],
                 transition: { duration: 0.3, ease: "easeOut" }
             });
 
-            // v2.00.013 - BOTTOM PROGRESS LINE (TOGGLEABLE)
+            // v2.00.014 - BOTTOM PROGRESS LINE (TOGGLEABLE)
             if (showProgress) {
                 const progress = document.createElement('div');
                 progress.className = 'absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0 w-0';
@@ -50,7 +47,7 @@
                 });
             }
 
-            // v2.00.013 - DELAYED FADE OUT (0.5s after progress)
+            // v2.00.014 - DELAYED FADE OUT (0.5s after progress)
             setTimeout(() => {
                 motion(toast, {
                     x: [0, 100],
@@ -61,7 +58,7 @@
             }, lifetime + 500);
         }
 
-        // v2.00.013 - MESSAGE LISTENER
+        // v2.00.014 - MESSAGE LISTENER
         window.addEventListener('message', (e) => {
             if (e.data.type === 'toast') {
                 showToast(e.data.message, e.data.lifetime || 3000, e.data.showProgress !== false);
