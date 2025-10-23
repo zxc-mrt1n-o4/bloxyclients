@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloxd Client UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { 'bloxd': '#ff6b35' } } }
+        }
+    </script>
+</head>
+<body class="bg-transparent">
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-[99999] pointer-events-none">
+    </div>
+
+    <!-- CONTROL PANEL (Future) -->
+    <div id="panel" class="hidden fixed bottom-6 left-6 z-[99999]">
+        <div class="bg-black/90 backdrop-blur-md rounded-lg p-4 border border-bloxd/30">
+            <h3 class="text-white text-sm font-mono mb-2">CLIENT CONTROLS</h3>
+            <div class="space-y-1 text-xs text-gray-300">
+                <button onclick="autoclicker.on()" class="w-full bg-bloxd/80 hover:bg-bloxd text-white px-2 py-1 rounded mb-1">AUTO ON</button>
+                <button onclick="autoclicker.off()" class="w-full bg-gray-800 hover:bg-gray-700 text-white px-2 py-1 rounded mb-1">AUTO OFF</button>
+                <button onclick="autoclicker.mobile()" class="w-full bg-blue-600/80 hover:bg-blue-600 text-white px-2 py-1 rounded">MOBILE MODE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TOAST FUNCTION
+        function showToast(message, duration = 5000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-lg p-3 min-w-[220px] animate-slideInRight text-white text-sm font-mono shadow-2xl';
+            toast.innerHTML = `
+                <div>${message}</div>
+                <div class="h-0.5 bg-blue-500 rounded-full mt-2 overflow-hidden">
+                    <div class="h-full bg-blue-500 rounded-full animate-progress" style="animation-duration: ${duration}ms"></div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('animate-slideOutRight');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // CSS Animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+            @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+            @keyframes progress { from { width: 0%; } to { width: 100%; } }
+        `;
+        document.head.appendChild(style);
+
+        // INJECTION TOAST
+        setTimeout(() => showToast('Client v2.0 INJECTED', 5000), 500);
+
+        // Listen for autoclicker commands
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'toast') showToast(e.data.message, e.data.duration);
+        });
+    </script>
+</body>
+</html>
