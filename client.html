@@ -1,109 +1,66 @@
-<!-- v2.01.000-alpha - TOAST SYSTEM REWRITE -->
+<!-- v2.01.001-alpha - Robust Toast System -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloxy Client UI</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Consolas', monospace;
-            background: transparent;
-        }
-
-        #toast-container {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 99999;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            display: flex;
-            flex-direction: column;
-            width: 280px;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            color: #fff;
-            animation: slideIn 0.25s ease-out forwards;
-        }
-
-        .toast-header {
-            font-weight: bold;
-            font-size: 14px;
-            padding: 10px 14px 0;
-            color: #60a5fa;
-            text-shadow: 0 0 4px rgba(59,130,246,0.5);
-        }
-
-        .toast-text {
-            font-size: 13px;
-            padding: 4px 14px 12px;
-            color: #e0e7ff;
-        }
-
-        .toast-progress {
-            height: 2px;
-            width: 0;
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
-            box-shadow: 0 0 8px rgba(59,130,246,0.5);
-            animation: progressLine linear forwards;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        @keyframes progressLine {
-            to { width: 100%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloxy Client UI</title>
+<style>
+body{margin:0;font-family:'Consolas',monospace;background:transparent}
+#toast-container{
+    position:fixed;bottom:1.5rem;right:1.5rem;z-index:99999;
+    display:flex;flex-direction:column;gap:10px;pointer-events:none
+}
+.toast{
+    display:flex;flex-direction:column;width:280px;
+    background:rgba(10,10,15,0.85);backdrop-filter:blur(14px);
+    border:1px solid rgba(59,130,246,0.25);border-radius:14px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);color:#fff;
+    animation:slideIn .25s ease-out forwards;overflow:hidden
+}
+.toast-header{font-weight:bold;font-size:14px;padding:10px 14px 0;
+    color:#60a5fa;text-shadow:0 0 4px rgba(59,130,246,.5)}
+.toast-text{font-size:13px;padding:4px 14px 12px;color:#e0e7ff}
+.toast-progress{height:2px;width:0;
+    background:linear-gradient(90deg,#3b82f6,#60a5fa);
+    box-shadow:0 0 8px rgba(59,130,246,.5);
+    animation:progressLine linear forwards}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}
+                   to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}
+                    to{transform:translateX(100%);opacity:0}}
+@keyframes progressLine{to{width:100%}}
+</style>
 </head>
 <body>
-    <div id="toast-container"></div>
-
-    <script>
-        function showToast(title, text, lifetime = 4000) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `
-                <div class="toast-header">${title}</div>
-                <div class="toast-text">${text}</div>
-                <div class="toast-progress"></div>
-            `;
-
-            const progress = toast.querySelector('.toast-progress');
-            progress.style.animationDuration = lifetime + 'ms';
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease-in forwards';
-                setTimeout(() => toast.remove(), 300);
-            }, lifetime + 300);
-        }
-
-        window.addEventListener('message', e => {
-            if (e.data.type === 'toast') {
-                showToast(e.data.title || 'BloxyClient', e.data.text || '', e.data.lifetime || 3000);
-            }
-        });
-    </script>
+<div id="toast-container"></div>
+<script>
+function showToast(title='BloxyClient', text='', lifetime=3000){
+    const c=document.getElementById('toast-container');
+    const t=document.createElement('div');
+    t.className='toast';
+    t.innerHTML=`
+        <div class="toast-header">${title}</div>
+        <div class="toast-text">${text}</div>
+        <div class="toast-progress"></div>
+    `;
+    const p=t.querySelector('.toast-progress');
+    p.style.animationDuration=lifetime+'ms';
+    c.appendChild(t);
+    setTimeout(()=>{
+        t.style.animation='slideOut .3s ease-in forwards';
+        setTimeout(()=>t.remove(),300);
+    },lifetime+300);
+}
+window.addEventListener('message',e=>{
+    if(e.data?.type==='toast'){
+        showToast(
+            e.data.title || 'BloxyClient',
+            e.data.text  || e.data.message || '',
+            typeof e.data.lifetime==='number'?e.data.lifetime:3000
+        );
+    }
+});
+</script>
 </body>
 </html>
