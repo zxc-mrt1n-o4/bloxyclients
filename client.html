@@ -13,7 +13,7 @@
             backdrop-filter:blur(16px);
             border:1px solid rgba(59,130,246,0.3);
             border-radius:12px;
-            padding:16px;
+            padding:16px 16px 8px; /* add bottom padding for line space */
             min-width:240px;
             margin-bottom:8px;
             box-shadow:0 25px 50px rgba(0,0,0,0.25);
@@ -22,14 +22,20 @@
             animation:slideIn 0.3s ease-out forwards;
             display:flex;
             flex-direction:column;
+            overflow:hidden; /* ensures line stays contained */
         }
-        .toast-text{flex:1;text-align:center;margin-bottom:auto}
+        .toast-text{
+            flex:1;
+            text-align:center;
+            margin-bottom:4px; /* separate from line */
+        }
         .progress-line{
-            height:10px;
-            background:#3b82f6;
+            height:3px; /* thinner line */
+            background:linear-gradient(90deg,#3b82f6,#60a5fa);
             border-radius:0 0 12px 12px;
             width:0;
             animation:progressLine linear forwards;
+            box-shadow:0 0 6px rgba(59,130,246,0.6);
         }
         @keyframes slideIn{
             from{transform:translateX(100%);opacity:0}
