@@ -1,79 +1,70 @@
-<!-- v2.00.011 - BOTTOM LINE + WORKING ANIMATION + DELAY -->
+<!-- v2.00.013 - MODERN SCRIPTS: TAILWIND + MOTION ESM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- v2.00.011 - INLINE TAILWIND -->
+    <!-- v2.00.013 - TAILWIND CDN (MINIFIED, NO WARNING) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
-    <style>
-        /* v2.00.011 - INLINE TAILWIND */
-        *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-        .bg-transparent{background:transparent}
-        .fixed{position:fixed}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem*var(--tw-space-y-reverse))}
-        .z-99999{z-index:99999}.pointer-events-none{pointer-events:none}
-        .bg-black\/95{background-color:rgba(0,0,0,.95)}.backdrop-blur-lg{backdrop-filter:blur(16px)}
-        .border{border-width:1px}.border-blue-500\/30{border-color:rgba(59,130,246,.3)}
-        .rounded-xl{border-radius:0.75rem}.p-4{padding:1rem}.min-w-240{min-width:240px}
-        .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
-        .text-white{color:#fff}.text-sm{font-size:0.875rem}.font-mono{font-family:ui-monospace,monospace}
-        .flex{display:flex}.items-center{align-items:center}.justify-center{justify-content:center}
-        
-        /* v2.00.011 - BOTTOM PROGRESS LINE */
-        .progress-line {
-            position: absolute !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            height: 0.25rem !important;
-            background-color: #3b82f6 !important;
-            border-radius: 0 0 0.75rem 0.75rem !important;
-            box-shadow: 0 1px 2px 0 rgba(0,0,0,.05) !important;
-            width: 0 !important;
-            animation: progressLength linear forwards !important;
-        }
-        
-        /* v2.00.011 - ANIMATIONS */
-        .slide-in{animation:slideIn 0.3s ease-out forwards}
-        .slide-out{animation:slideOut 0.3s ease-in forwards}
-        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-        @keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
-        @keyframes progressLength{to{width:100%}}
-    </style>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { 'bloxd': '#ff6b35' } } } }
+    </script>
+    <!-- v2.00.013 - MOTION ESM BASE -->
+    <base href="https://cdn.jsdelivr.net/npm/">
 </head>
 <body class="bg-transparent">
-    <!-- v2.00.011 - TOAST CONTAINER -->
-    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-99999 pointer-events-none"></div>
+    <!-- v2.00.013 - TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-[99999] pointer-events-none">
+    </div>
 
-    <!-- v2.00.011 - TOAST SCRIPT -->
-    <script>
-        function showToast(message, lifetime = 5000) {
+    <!-- v2.00.013 - MOTION ESM SCRIPT (DEFERRED LOAD) -->
+    <script type="module" defer>
+        import { motion } from "framer-motion@11/+esm";  // ESM import (bypasses MIME via +esm)
+        
+        // v2.00.013 - MOTION TOAST COMPONENT
+        async function showToast(message, lifetime = 5000, showProgress = true) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-240 shadow-2xl text-white text-sm font-mono slide-in relative';
+            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-[240px] shadow-2xl text-white text-sm font-mono relative overflow-hidden flex flex-col';
             
-            // v2.00.011 - CLEAN TEXT
-            toast.innerHTML = `<div class="flex items-center justify-center">${message}</div>`;
-            
+            toast.innerHTML = `<div class="flex items-center justify-center mb-auto">${message}</div>`;
             container.appendChild(toast);
 
-            // v2.00.011 - BOTTOM PROGRESS LINE
-            const progress = document.createElement('div');
-            progress.className = 'progress-line';
-            progress.style.animationDuration = lifetime + 'ms';
-            toast.appendChild(progress);
+            // v2.00.013 - SLIDE IN
+            await motion(toast, {
+                x: [100, 0],
+                opacity: [0, 1],
+                transition: { duration: 0.3, ease: "easeOut" }
+            });
 
-            // v2.00.011 - DELAYED FADE OUT (0.5s after progress ends)
+            // v2.00.013 - BOTTOM PROGRESS LINE (TOGGLEABLE)
+            if (showProgress) {
+                const progress = document.createElement('div');
+                progress.className = 'absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0 w-0';
+                toast.appendChild(progress);
+                
+                await motion(progress, {
+                    width: ['0%', '100%'],
+                    transition: { duration: lifetime / 1000, ease: "linear" }
+                });
+            }
+
+            // v2.00.013 - DELAYED FADE OUT (0.5s after progress)
             setTimeout(() => {
-                toast.classList.remove('slide-in');
-                toast.classList.add('slide-out');
+                motion(toast, {
+                    x: [0, 100],
+                    opacity: [1, 0],
+                    transition: { duration: 0.3, ease: "easeIn" }
+                });
                 setTimeout(() => toast.remove(), 300);
-            }, lifetime + 500); // +500ms DELAY
+            }, lifetime + 500);
         }
 
-        // v2.00.011 - MESSAGE LISTENER
+        // v2.00.013 - MESSAGE LISTENER
         window.addEventListener('message', (e) => {
             if (e.data.type === 'toast') {
-                showToast(e.data.message, e.data.lifetime || 3000);
+                showToast(e.data.message, e.data.lifetime || 3000, e.data.showProgress !== false);
             }
         });
     </script>
