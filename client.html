@@ -4,72 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
-    <!-- PRE-BUILT TAILWIND (No CDN Warning) -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- MOTION ESM -->
-    <script type="module">
-        import { motion } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
-        window.framerMotion = { motion };
-    </script>
     <style>
-        .bloxd { color: #ff6b35; }
-        .bg-bloxd { background-color: #ff6b35; }
-        .border-bloxd { border-color: #ff6b35; }
+        /* INLINE TAILWIND + MOTION */
+        *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+        .bg-transparent{background:transparent}
+        .fixed{position:fixed}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem*var(--tw-space-y-reverse))}
+        .z-99999{z-index:99999}.pointer-events-none{pointer-events:none}
+        .bg-black\/95{background-color:rgba(0,0,0,.95)}.backdrop-blur-lg{backdrop-filter:blur(16px)}
+        .border{border-width:1px}.border-blue-500\/30{border-color:rgba(59,130,246,.3)}
+        .rounded-xl{border-radius:0.75rem}.p-4{padding:1rem}.min-w-240{min-width:240px}
+        .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
+        .text-white{color:#fff}.text-sm{font-size:0.875rem}.font-mono{font-family:ui-monospace,monospace}
+        .flex{display:flex}.items-center{align-items:center}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem*(1 - var(--tw-space-x-reverse)));margin-left:calc(0.75rem*var(--tw-space-x-reverse))}
+        .flex-1{flex:1 1 0%}.w-6{width:1.5rem}.h-6{height:1.5rem}.rounded-full{border-radius:9999px}
+        .bg-blue-500\/30{background-color:rgba(59,130,246,.3)}.border-2{border-width:2px}.border-blue-500{border-color:#3b82f6}
+        .w-2{width:0.5rem}.h-2{height:0.5rem}.mt-2{margin-top:0.5rem}.overflow-hidden{overflow:hidden}
+        .absolute{position:absolute}.bottom-0{bottom:0}.left-0{left:0}.h-1{height:0.25rem}
+        .bg-blue-500{background-color:#3b82f6}.rounded-b-xl{border-bottom-right-radius:0.75rem;border-bottom-left-radius:0.75rem}
+        .z-10{z-index:10}.relative{position:relative}
+        
+        /* MOTION ANIMATIONS */
+        .slide-in{animation:slideIn 0.3s ease-out forwards}.slide-out{animation:slideOut 0.3s ease-in forwards}
+        .progress-fill{animation:progressFill linear forwards}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+        @keyframes progressFill{to{width:100%}}
     </style>
 </head>
 <body class="bg-transparent">
-    <!-- TOAST CONTAINER -->
-    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-[99999] pointer-events-none">
-    </div>
+    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-99999 pointer-events-none"></div>
 
-    <script type="module">
-        // MOTION TOAST COMPONENT
-        async function showToast(message, duration = 5000) {
-            const { motion } = window.framerMotion;
+    <script>
+        function showToast(message, duration = 5000) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'bg-black bg-opacity-95 backdrop-blur-lg border border-blue-500 border-opacity-30 rounded-xl p-4 min-w-[240px] shadow-2xl text-white text-sm font-mono flex items-center space-x-3 relative overflow-hidden';
+            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-240 shadow-2xl text-white text-sm font-mono flex items-center space-x-3 relative overflow-hidden slide-in';
             
             toast.innerHTML = `
                 <div class="flex-1 z-10">${message}</div>
-                <div class="w-6 h-6 rounded-full bg-blue-500 bg-opacity-30 border-2 border-blue-500 flex items-center justify-center z-10">
+                <div class="w-6 h-6 rounded-full bg-blue-500/30 border-2 border-blue-500 flex items-center justify-center z-10">
                     <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
                 </div>
             `;
             
             container.appendChild(toast);
 
-            // SLIDE IN
-            await motion(toast, {
-                x: [100, 0],
-                opacity: [0, 1],
-                transition: { duration: 0.3, ease: "easeOut" }
-            });
-
-            // BOLD PROGRESS LINE
+            // PROGRESS LINE
             const progress = document.createElement('div');
-            progress.className = 'absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0';
+            progress.className = `absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0 progress-fill`;
+            progress.style.animationDuration = duration + 'ms';
             toast.appendChild(progress);
-            
-            await motion(progress, {
-                width: ['0%', '100%'],
-                transition: { duration: duration/1000, ease: "linear" }
-            });
 
-            // SMOOTH FADE OUT
-            await motion(toast, {
-                x: [0, 100],
-                opacity: [1, 0],
-                transition: { duration: 0.3, ease: "easeIn" }
-            });
-            setTimeout(() => toast.remove(), 300);
+            // FADE OUT
+            setTimeout(() => {
+                toast.classList.remove('slide-in');
+                toast.classList.add('slide-out');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
         }
 
         // LISTEN FOR MESSAGES
         window.addEventListener('message', (e) => {
-            if (e.data.type === 'toast') {
-                showToast(e.data.message, e.data.duration);
-            }
+            if (e.data.type === 'toast') showToast(e.data.message, e.data.duration || 3000);
         });
     </script>
 </body>
