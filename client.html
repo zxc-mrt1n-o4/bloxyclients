@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
     <style>
-        /* INLINE TAILWIND + MOTION */
+        /* INLINE TAILWIND */
         *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
         .bg-transparent{background:transparent}
         .fixed{position:fixed}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem*var(--tw-space-y-reverse))}
@@ -15,16 +15,15 @@
         .rounded-xl{border-radius:0.75rem}.p-4{padding:1rem}.min-w-240{min-width:240px}
         .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
         .text-white{color:#fff}.text-sm{font-size:0.875rem}.font-mono{font-family:ui-monospace,monospace}
-        .flex{display:flex}.items-center{align-items:center}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem*(1 - var(--tw-space-x-reverse)));margin-left:calc(0.75rem*var(--tw-space-x-reverse))}
-        .flex-1{flex:1 1 0%}.w-6{width:1.5rem}.h-6{height:1.5rem}.rounded-full{border-radius:9999px}
-        .bg-blue-500\/30{background-color:rgba(59,130,246,.3)}.border-2{border-width:2px}.border-blue-500{border-color:#3b82f6}
-        .w-2{width:0.5rem}.h-2{height:0.5rem}.mt-2{margin-top:0.5rem}.overflow-hidden{overflow:hidden}
-        .absolute{position:absolute}.bottom-0{bottom:0}.left-0{left:0}.h-1{height:0.25rem}
-        .bg-blue-500{background-color:#3b82f6}.rounded-b-xl{border-bottom-right-radius:0.75rem;border-bottom-left-radius:0.75rem}
-        .z-10{z-index:10}.relative{position:relative}
+        .flex{display:flex}.items-center{align-items:center}.justify-center{justify-content:center}
+        .mt-3{margin-top:0.75rem}.mb-3{margin-bottom:0.75rem}
+        .absolute{position:absolute}.left-0{left:0}.right-0{right:0}.top-0{top:0}
+        .h-1{height:0.25rem}.bg-blue-500{background-color:#3b82f6}
+        .rounded-full{border-radius:9999px}.shadow-sm{box-shadow:0 1px 2px 0 rgba(0,0,0,.05)}
         
-        /* MOTION ANIMATIONS */
-        .slide-in{animation:slideIn 0.3s ease-out forwards}.slide-out{animation:slideOut 0.3s ease-in forwards}
+        /* ANIMATIONS */
+        .slide-in{animation:slideIn 0.3s ease-out forwards}
+        .slide-out{animation:slideOut 0.3s ease-in forwards}
         .progress-fill{animation:progressFill linear forwards}
         @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
         @keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
@@ -38,24 +37,19 @@
         function showToast(message, duration = 5000) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-240 shadow-2xl text-white text-sm font-mono flex items-center space-x-3 relative overflow-hidden slide-in';
+            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-240 shadow-2xl text-white text-sm font-mono slide-in relative';
             
-            toast.innerHTML = `
-                <div class="flex-1 z-10">${message}</div>
-                <div class="w-6 h-6 rounded-full bg-blue-500/30 border-2 border-blue-500 flex items-center justify-center z-10">
-                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                </div>
-            `;
+            toast.innerHTML = `<div class="flex items-center justify-center">${message}</div>`;
             
             container.appendChild(toast);
 
-            // PROGRESS LINE
+            // FLOATING ROUNDED PROGRESS LINE
             const progress = document.createElement('div');
-            progress.className = `absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0 progress-fill`;
+            progress.className = 'absolute left-0 right-0 top-0 h-1 bg-blue-500 rounded-full shadow-sm mt-3';
             progress.style.animationDuration = duration + 'ms';
             toast.appendChild(progress);
 
-            // FADE OUT
+            // FADE OUT AFTER PROGRESS
             setTimeout(() => {
                 toast.classList.remove('slide-in');
                 toast.classList.add('slide-out');
