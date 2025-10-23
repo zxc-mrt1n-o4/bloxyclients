@@ -1,64 +1,79 @@
-<!-- v2.00.014 - MODERN SCRIPTS: PRE-BUILT TAILWIND + SKYPACK MOTION ESM -->
+<!-- v2.00.015 - INLINE FIXED: BOTTOM LINE + WORKING ANIMATION -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- v2.00.014 - PRE-BUILT TAILWIND CSS (No JS MIME Issue) -->
+    <!-- v2.00.015 - INLINE TAILWIND -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloxd Client UI</title>
-    <link rel="preload" href="https://unpkg.com/tailwindcss@^3.3.0/dist/tailwind.min.css" as="style">
-    <link href="https://unpkg.com/tailwindcss@^3.3.0/dist/tailwind.min.css" rel="stylesheet">
-    <!-- v2.00.014 - MOTION ESM VIA SKYPACK (Bypasses Bare Specifier) -->
+    <style>
+        /* v2.00.015 - INLINE TAILWIND + PROGRESS FIX */
+        *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+        .bg-transparent{background:transparent}
+        .fixed{position:fixed}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem*var(--tw-space-y-reverse))}
+        .z-99999{z-index:99999}.pointer-events-none{pointer-events:none}
+        .bg-black\/95{background-color:rgba(0,0,0,.95)}.backdrop-blur-lg{backdrop-filter:blur(16px)}
+        .border{border-width:1px}.border-blue-500\/30{border-color:rgba(59,130,246,.3)}
+        .rounded-xl{border-radius:0.75rem}.p-4{padding:1rem}.pb-1{padding-bottom:0.25rem !important}.min-w-240{min-width:240px}
+        .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
+        .text-white{color:#fff}.text-sm{font-size:0.875rem}.font-mono{font-family:ui-monospace,monospace}
+        .flex{display:flex}.items-center{align-items:center}.justify-center{justify-content:center}
+        
+        /* v2.00.015 - BOTTOM PROGRESS LINE (FORCED) */
+        .progress-line {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 3px !important;
+            background-color: #3b82f6 !important;
+            border-radius: 0 0 12px 12px !important;
+            box-shadow: 0 1px 3px rgba(59,130,246,0.3) !important;
+            width: 0 !important;
+            animation: progressLength linear forwards !important;
+            z-index: 0 !important;
+        }
+        
+        /* v2.00.015 - ANIMATIONS (FORCED WIDTH) */
+        .slide-in{animation:slideIn 0.3s ease-out forwards !important}
+        .slide-out{animation:slideOut 0.3s ease-in forwards !important}
+        @keyframes slideIn{from{transform:translateX(100%) !important;opacity:0 !important}to{transform:translateX(0) !important;opacity:1 !important}}
+        @keyframes slideOut{from{transform:translateX(0) !important;opacity:1 !important}to{transform:translateX(100%) !important;opacity:0 !important}}
+        @keyframes progressLength{to{width:100% !important}}
+    </style>
 </head>
 <body class="bg-transparent">
-    <!-- v2.00.014 - TOAST CONTAINER -->
-    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-[99999] pointer-events-none">
-    </div>
+    <!-- v2.00.015 - TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-99999 pointer-events-none"></div>
 
-    <!-- v2.00.014 - MOTION ESM SCRIPT (FULL URL + CROSSORIGIN) -->
-    <script type="module" crossorigin="anonymous">
-        import { motion } from "https://cdn.skypack.dev/framer-motion@11";
-        
-        // v2.00.014 - MOTION TOAST COMPONENT
-        async function showToast(message, lifetime = 5000, showProgress = true) {
+    <!-- v2.00.015 - TOAST SCRIPT -->
+    <script>
+        function showToast(message, lifetime = 5000, showProgress = true) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 min-w-[240px] shadow-2xl text-white text-sm font-mono relative overflow-hidden flex flex-col';
+            toast.className = 'bg-black/95 backdrop-blur-lg border border-blue-500/30 rounded-xl p-4 pb-1 min-w-240 shadow-2xl text-white text-sm font-mono slide-in relative flex flex-col';
             
-            toast.innerHTML = `<div class="flex items-center justify-center mb-auto">${message}</div>`;
+            toast.innerHTML = `<div class="flex items-center justify-center">${message}</div>`;
+            
             container.appendChild(toast);
 
-            // v2.00.014 - SLIDE IN
-            await motion(toast, {
-                x: [100, 0],
-                opacity: [0, 1],
-                transition: { duration: 0.3, ease: "easeOut" }
-            });
-
-            // v2.00.014 - BOTTOM PROGRESS LINE (TOGGLEABLE)
+            // v2.00.015 - BOTTOM PROGRESS LINE (TOGGLEABLE)
             if (showProgress) {
                 const progress = document.createElement('div');
-                progress.className = 'absolute bottom-0 left-0 h-1 bg-blue-500 rounded-b-xl z-0 w-0';
+                progress.className = 'progress-line';
+                progress.style.animationDuration = lifetime + 'ms';
                 toast.appendChild(progress);
-                
-                await motion(progress, {
-                    width: ['0%', '100%'],
-                    transition: { duration: lifetime / 1000, ease: "linear" }
-                });
             }
 
-            // v2.00.014 - DELAYED FADE OUT (0.5s after progress)
+            // v2.00.015 - DELAYED FADE OUT (0.5s after progress)
             setTimeout(() => {
-                motion(toast, {
-                    x: [0, 100],
-                    opacity: [1, 0],
-                    transition: { duration: 0.3, ease: "easeIn" }
-                });
+                toast.classList.remove('slide-in');
+                toast.classList.add('slide-out');
                 setTimeout(() => toast.remove(), 300);
             }, lifetime + 500);
         }
 
-        // v2.00.014 - MESSAGE LISTENER
+        // v2.00.015 - MESSAGE LISTENER
         window.addEventListener('message', (e) => {
             if (e.data.type === 'toast') {
                 showToast(e.data.message, e.data.lifetime || 3000, e.data.showProgress !== false);
